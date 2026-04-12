@@ -183,7 +183,7 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 </div>
 
 <!-- SEARCH -->
-<div class="search-section" id="finder" style="display:none;">
+<div class="search-section" id="finder">
   <div class="search-box">
     <div class="search-row">
       <input class="search-input" id="searchInput" placeholder="Find a Pit — name, city, or state…" oninput="filterRestaurants()"/>
@@ -321,6 +321,7 @@ states.forEach(s => { const o=document.createElement("option"); o.value=s; o.tex
 styles.forEach(s => { const o=document.createElement("option"); o.value=s; o.textContent=s; styleEl.appendChild(o); });
 
 function filterRestaurants() {
+  document.getElementById("grid-section").style.display = "block";
   const q = document.getElementById("searchInput").value.toLowerCase().trim();
   const state = document.getElementById("stateSelect").value;
   const style = document.getElementById("styleSelect").value;
@@ -456,9 +457,7 @@ if (slides.length) {
 
 
 function showAll() {
-  document.getElementById("finder").style.display = "block";
   document.getElementById("grid-section").style.display = "block";
-  document.getElementById("featured-section").style.display = "none";
   document.getElementById("finder").scrollIntoView({behavior:"smooth"});
 }
 
