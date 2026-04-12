@@ -167,15 +167,15 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 
 
 <!-- FEATURED TOP 5 -->
-<div style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px 48px;">
+<div id="featured-section" style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px 48px;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
     <div>
       <p style="font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#CC1111;margin-bottom:6px;">Editor's picks</p>
       <h2 style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:3px;color:#FFFFFF;line-height:1;">Top Rated Pits</h2>
     </div>
-    <a href="#finder" style="display:flex;align-items:center;gap:8px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#CC1111;text-decoration:none;border:1px solid #CC1111;padding:10px 20px;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.background='#CC1111';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='#CC1111'">
+    <button onclick="showAll()" style="display:flex;align-items:center;gap:8px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#CC1111;text-decoration:none;border:1px solid #CC1111;padding:10px 20px;border-radius:4px;transition:all 0.2s;background:transparent;cursor:pointer;" onmouseover="this.style.background='#CC1111';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='#CC1111'">
       See All 734 &#8594;
-    </a>
+    </button>
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;" id="featured-grid">
@@ -183,7 +183,7 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 </div>
 
 <!-- SEARCH -->
-<div class="search-section" id="finder">
+<div class="search-section" id="finder" style="display:none;">
   <div class="search-box">
     <div class="search-row">
       <input class="search-input" id="searchInput" placeholder="Find a Pit — name, city, or state…" oninput="filterRestaurants()"/>
@@ -195,7 +195,7 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 </div>
 
 <!-- RESULTS -->
-<div class="grid-section">
+<div class="grid-section" id="grid-section" style="display:none;">
   <div class="results-bar">
     <div class="results-count"><span id="resultCount">734</span> restaurants found</div>
     <div class="sort-btns">
@@ -452,6 +452,14 @@ if (slides.length) {
     currentSlide = (currentSlide + 1) % slides.length;
     slides[currentSlide].classList.add('active');
   }, 4000);
+}
+
+
+function showAll() {
+  document.getElementById("finder").style.display = "block";
+  document.getElementById("grid-section").style.display = "block";
+  document.getElementById("featured-section").style.display = "none";
+  document.getElementById("finder").scrollIntoView({behavior:"smooth"});
 }
 
 // Featured Top 5
