@@ -528,8 +528,16 @@ const FOOD_TRUCKS = [{"id": 1001, "name": "Rollin Smoke BBQ", "city": "Nashville
 
 function filterTrucks() {
   const q = document.getElementById("truckSearch").value.trim().toLowerCase();
+  const STATE_NAMES = {"alabama":"AL","alaska":"AK","arizona":"AZ","arkansas":"AR","california":"CA","colorado":"CO","connecticut":"CT","delaware":"DE","florida":"FL","georgia":"GA","hawaii":"HI","idaho":"ID","illinois":"IL","indiana":"IN","iowa":"IA","kansas":"KS","kentucky":"KY","louisiana":"LA","maine":"ME","maryland":"MD","massachusetts":"MA","michigan":"MI","minnesota":"MN","mississippi":"MS","missouri":"MO","montana":"MT","nebraska":"NE","nevada":"NV","new hampshire":"NH","new jersey":"NJ","new mexico":"NM","new york":"NY","north carolina":"NC","north dakota":"ND","ohio":"OH","oklahoma":"OK","oregon":"OR","pennsylvania":"PA","rhode island":"RI","south carolina":"SC","south dakota":"SD","tennessee":"TN","texas":"TX","utah":"UT","vermont":"VT","virginia":"VA","washington":"WA","west virginia":"WV","wisconsin":"WI","wyoming":"WY"};
+  const stateAbbr = STATE_NAMES[q] || q.toUpperCase();
   const filtered = q
-    ? FOOD_TRUCKS.filter(t => t.city.toLowerCase().includes(q) || t.state.toLowerCase().includes(q) || t.name.toLowerCase().includes(q))
+    ? FOOD_TRUCKS.filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        t.city.toLowerCase().includes(q) ||
+        t.state.toLowerCase() === q ||
+        t.state.toUpperCase() === stateAbbr ||
+        (t.address && t.address.toLowerCase().includes(q))
+      )
     : FOOD_TRUCKS;
   document.getElementById("truckCount").textContent = filtered.length;
   renderTrucks(filtered);
