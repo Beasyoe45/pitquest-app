@@ -641,6 +641,16 @@ if (slides.length) setInterval(()=>{ slides[curSlide].classList.remove('active')
 
 // Autoplay music on first click
 document.addEventListener("click", ()=>document.getElementById("bgMusic").play(), {once:true});
+
+// Toggle Shop panel
+function toggleShop(e) {
+  e.preventDefault();
+  const shopEl = document.getElementById("shop");
+  if (!shopEl) return;
+  const isHidden = shopEl.style.display === "none" || shopEl.style.display === "";
+  shopEl.style.display = isHidden ? "block" : "none";
+  if (isHidden) shopEl.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 </script>
 </body>
 </html>
