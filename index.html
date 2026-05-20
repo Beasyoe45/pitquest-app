@@ -88,6 +88,40 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 .footer-logo span{color:var(--red);}
 .footer-copy{font-size:12px;color:#444;}
 @media(max-width:600px){.search-row{flex-direction:column;}.nav-links{display:none;}.hero-stats{gap:24px;}.restaurant-grid{grid-template-columns:1fr;}}
+
+/* ── ONBOARDING TOUR ── */
+#tour-backdrop{position:fixed;inset:0;z-index:9000;pointer-events:none;}
+#tour-backdrop.active{pointer-events:all;}
+.tour-hole{position:fixed;box-shadow:0 0 0 9999px rgba(0,0,0,0.78);border-radius:10px;z-index:9001;pointer-events:none;transition:all 0.4s cubic-bezier(.4,0,0.2,1);}
+.tour-tooltip{position:fixed;z-index:9002;background:#1E1E1E;border:1px solid #CC1111;border-radius:12px;padding:20px 22px 16px;max-width:320px;width:90vw;box-shadow:0 8px 40px rgba(0,0,0,0.7);transition:all 0.4s cubic-bezier(.4,0,0.2,1);}
+.tour-tooltip::before{content:'';position:absolute;width:12px;height:12px;background:#1E1E1E;border:1px solid #CC1111;transform:rotate(45deg);}
+.tour-tooltip.arrow-top::before{top:-7px;left:24px;border-bottom:none;border-right:none;}
+.tour-tooltip.arrow-bottom::before{bottom:-7px;left:24px;border-top:none;border-left:none;}
+.tour-tooltip.arrow-left::before{left:-7px;top:22px;border-bottom:none;border-left:none;}
+.tour-step-badge{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#CC1111;margin-bottom:6px;}
+.tour-tooltip h4{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#FFFFFF;margin-bottom:6px;line-height:1.2;}
+.tour-tooltip p{font-size:13px;color:#AAA;line-height:1.6;margin-bottom:14px;}
+.tour-dots{display:flex;gap:6px;margin-bottom:14px;}
+.tour-dot{width:7px;height:7px;border-radius:50%;background:#333;transition:background 0.2s;}
+.tour-dot.active{background:#CC1111;}
+.tour-btns{display:flex;gap:8px;align-items:center;justify-content:space-between;}
+.tour-btn-next{background:#CC1111;color:#FFF;border:none;border-radius:6px;padding:9px 20px;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;transition:background 0.2s;}
+.tour-btn-next:hover{background:#990D0D;}
+.tour-btn-skip{background:transparent;border:none;color:#666;font-size:12px;font-family:'Oswald',sans-serif;letter-spacing:1px;cursor:pointer;text-transform:uppercase;padding:4px 0;}
+.tour-btn-skip:hover{color:#AAA;}
+.tour-btn-prev{background:transparent;border:1px solid #444;color:#888;border-radius:6px;padding:9px 14px;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;}
+.tour-btn-prev:hover{border-color:#888;color:#FFF;}
+
+/* Welcome modal */
+#tour-welcome{position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);padding:20px;}
+#tour-welcome-box{background:#1A1A1A;border:1px solid #CC1111;border-radius:16px;max-width:420px;width:100%;padding:36px 32px;text-align:center;position:relative;}
+#tour-welcome-box h2{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:4px;color:#FFF;line-height:1;margin-bottom:6px;}
+#tour-welcome-box h2 span{color:#CC1111;}
+#tour-welcome-box p{font-size:14px;color:#AAA;line-height:1.7;margin-bottom:28px;}
+.tour-welcome-start{display:block;width:100%;padding:13px;background:#CC1111;color:#FFF;border:none;border-radius:8px;font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;}
+.tour-welcome-start:hover{background:#990D0D;}
+.tour-welcome-skip{background:transparent;border:none;color:#555;font-size:12px;font-family:'Oswald',sans-serif;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
+.tour-welcome-skip:hover{color:#AAA;}
 </style>
 </head>
 <body>
@@ -670,8 +704,242 @@ function toggleShop(e) {
   if (!shopEl) return;
   const isHidden = shopEl.style.display === "none" || shopEl.style.display === "";
   shopEl.style.display = isHidden ? "block" : "none";
-  if (isHidden) shopEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (isHidden) shopEl.scrollIntoView({ behavior: "smooth", block: "default" });
 }
+</script>
+
+<!-- ══════════════════════════════════════
+     ONBOARDING TOUR
+══════════════════════════════════════ -->
+
+<!-- Welcome Modal -->
+<div id="tour-welcome">
+  <div id="tour-welcome-box">
+    <div style="font-size:48px;margin-bottom:12px;">🔥</div>
+    <h2>Welcome to <span>PIT</span>QUEST</h2>
+    <p>Follow the smoke to the best BBQ across all 50 states.<br>Let us show you around in 30 seconds.</p>
+    <button class="tour-welcome-start" onclick="startTour()">🚀 Take the Tour</button>
+    <button class="tour-welcome-skip" onclick="dismissTour()">Skip — I'll explore on my own</button>
+  </div>
+</div>
+
+<!-- Tour Overlay -->
+<div id="tour-backdrop"></div>
+<div class="tour-hole" id="tour-hole" style="display:none;"></div>
+<div class="tour-tooltip" id="tour-tooltip" style="display:none;">
+  <div class="tour-step-badge" id="tour-step-badge">Step 1 of 5</div>
+  <h4 id="tour-title"></h4>
+  <p id="tour-desc"></p>
+  <div class="tour-dots" id="tour-dots"></div>
+  <div class="tour-btns">
+    <button class="tour-btn-prev" id="tour-prev" onclick="tourPrev()">← Back</button>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="tour-btn-skip" onclick="dismissTour()">Skip Tour</button>
+      <button class="tour-btn-next" id="tour-next" onclick="tourNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+  // ── Tour steps: each targets a CSS selector ──
+  const STEPS = [
+    {
+      selector: "nav",
+      title: "Navigation Bar",
+      desc: "Jump between sections — Explore BBQ, Food Trucks, Cookbooks, and more. Tap Download App to get the full mobile experience.",
+      arrow: "arrow-top",
+      position: "below"
+    },
+    {
+      selector: "#finder",
+      title: "BBQ Finder",
+      desc: "Search 745+ BBQ restaurants by city, state, or name. Filter by BBQ style and sort by rating or name to find your perfect pit stop.",
+      arrow: "arrow-top",
+      position: "below"
+    },
+    {
+      selector: ".rest-card",
+      title: "Restaurant Cards",
+      desc: "Click any card to see full details — hours, menu highlights, directions, and a direct call button. Tap the card image to browse photos.",
+      arrow: "arrow-top",
+      position: "below"
+    },
+    {
+      selector: "#rollin",
+      title: "Rollin Smoke 🚚",
+      desc: "Find BBQ food trucks on the move. Search by city or state to discover trucks rolling near you.",
+      arrow: "arrow-top",
+      position: "below"
+    },
+    {
+      selector: ".nav-cta",
+      title: "Download the App",
+      desc: "Get the free PitQuest app for GPS-powered BBQ discovery, offline access, and exclusive deals — always in your pocket.",
+      arrow: "arrow-top",
+      position: "below"
+    }
+  ];
+
+  let currentStep = 0;
+  let tourActive = false;
+
+  // Check if tour was already completed
+  const tourDone = sessionStorage.getItem('pitquest_tour_done');
+  if (tourDone) {
+    document.getElementById('tour-welcome').style.display = 'none';
+  }
+
+  window.startTour = function() {
+    document.getElementById('tour-welcome').style.display = 'none';
+    tourActive = true;
+    currentStep = 0;
+    renderStep();
+    document.getElementById('tour-backdrop').classList.add('active');
+  };
+
+  window.dismissTour = function() {
+    document.getElementById('tour-welcome').style.display = 'none';
+    document.getElementById('tour-hole').style.display = 'none';
+    document.getElementById('tour-tooltip').style.display = 'none';
+    document.getElementById('tour-backdrop').classList.remove('active');
+    tourActive = false;
+    sessionStorage.setItem('pitquest_tour_done', '1');
+  };
+
+  window.tourNext = function() {
+    if (currentStep < STEPS.length - 1) {
+      currentStep++;
+      renderStep();
+    } else {
+      finishTour();
+    }
+  };
+
+  window.tourPrev = function() {
+    if (currentStep > 0) {
+      currentStep--;
+      renderStep();
+    }
+  };
+
+  function finishTour() {
+    const tooltip = document.getElementById('tour-tooltip');
+    tooltip.innerHTML = `
+      <div style="text-align:center;padding:8px 4px;">
+        <div style="font-size:36px;margin-bottom:10px;">🔥</div>
+        <h4 style="font-family:'Oswald',sans-serif;font-size:20px;color:#FFF;margin-bottom:8px;">You're Ready to Quest!</h4>
+        <p style="font-size:13px;color:#AAA;margin-bottom:18px;line-height:1.6;">Follow the smoke, find the flavor. Enjoy exploring the best BBQ across America.</p>
+        <button class="tour-btn-next" onclick="dismissTour()" style="width:100%;padding:11px;">Let's Eat! 🍖</button>
+      </div>`;
+    tooltip.style.display = 'block';
+    document.getElementById('tour-hole').style.display = 'none';
+  }
+
+  function renderStep() {
+    const step = STEPS[currentStep];
+    const el = document.querySelector(step.selector);
+
+    const hole = document.getElementById('tour-hole');
+    const tooltip = document.getElementById('tour-tooltip');
+
+    // Reset tooltip content
+    tooltip.innerHTML = `
+      <div class="tour-step-badge" id="tour-step-badge"></div>
+      <h4 id="tour-title"></h4>
+      <p id="tour-desc"></p>
+      <div class="tour-dots" id="tour-dots"></div>
+      <div class="tour-btns">
+        <button class="tour-btn-prev" id="tour-prev" onclick="tourPrev()">← Back</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="tour-btn-skip" onclick="dismissTour()">Skip Tour</button>
+          <button class="tour-btn-next" id="tour-next" onclick="tourNext()">${currentStep === STEPS.length - 1 ? 'Finish 🎉' : 'Next →'}</button>
+        </div>
+      </div>`;
+
+    document.getElementById('tour-step-badge').textContent = `Step ${currentStep + 1} of ${STEPS.length}`;
+    document.getElementById('tour-title').textContent = step.title;
+    document.getElementById('tour-desc').textContent = step.desc;
+    document.getElementById('tour-prev').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
+
+    // Dots
+    const dotsEl = document.getElementById('tour-dots');
+    dotsEl.innerHTML = STEPS.map((_, i) =>
+      `<div class="tour-dot${i === currentStep ? ' active' : ''}"></div>`
+    ).join('');
+
+    if (!el) {
+      hole.style.display = 'none';
+      positionTooltipCenter(tooltip);
+      return;
+    }
+
+    // Scroll element into view
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(() => {
+      const rect = el.getBoundingClientRect();
+      const pad = 8;
+
+      // Position highlight hole
+      hole.style.display = 'block';
+      hole.style.left   = (rect.left - pad) + 'px';
+      hole.style.top    = (rect.top - pad) + 'px';
+      hole.style.width  = (rect.width + pad * 2) + 'px';
+      hole.style.height = (rect.height + pad * 2) + 'px';
+
+      // Remove old arrow classes
+      tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left');
+      tooltip.style.display = 'block';
+
+      const tipW = Math.min(320, window.innerWidth * 0.9);
+      const tipH = tooltip.offsetHeight || 180;
+      const margin = 16;
+
+      let tipLeft = rect.left + pad;
+      let tipTop;
+
+      if (step.position === 'below' && rect.bottom + tipH + margin + pad < window.innerHeight) {
+        tipTop = rect.bottom + pad + margin;
+        tooltip.classList.add('arrow-top');
+      } else if (rect.top - tipH - margin - pad > 0) {
+        tipTop = rect.top - pad - margin - tipH;
+        tooltip.classList.add('arrow-bottom');
+      } else {
+        tipTop = rect.top;
+        tipLeft = rect.right + margin;
+        tooltip.classList.add('arrow-left');
+      }
+
+      // Keep within viewport
+      tipLeft = Math.max(margin, Math.min(tipLeft, window.innerWidth - tipW - margin));
+      tipTop  = Math.max(margin, Math.min(tipTop, window.innerHeight - tipH - margin));
+
+      tooltip.style.left  = tipLeft + 'px';
+      tooltip.style.top   = tipTop + 'px';
+      tooltip.style.width = tipW + 'px';
+    }, 350);
+  }
+
+  function positionTooltipCenter(tooltip) {
+    tooltip.style.display = 'block';
+    const tipW = Math.min(320, window.innerWidth * 0.9);
+    const tipH = tooltip.offsetHeight || 200;
+    tooltip.style.left = ((window.innerWidth - tipW) / 2) + 'px';
+    tooltip.style.top  = ((window.innerHeight - tipH) / 2) + 'px';
+    tooltip.style.width = tipW + 'px';
+  }
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    if (!tourActive) return;
+    if (e.key === 'ArrowRight' || e.key === 'Enter') window.tourNext();
+    if (e.key === 'ArrowLeft') window.tourPrev();
+    if (e.key === 'Escape') window.dismissTour();
+  });
+
+})();
 </script>
 </body>
 </html>
