@@ -87,7 +87,20 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#444;}
 .footer-logo span{color:var(--red);}
 .footer-copy{font-size:12px;color:#444;}
-@media(max-width:600px){.search-row{flex-direction:column;}.nav-links{display:none;}.hero-stats{gap:24px;}.restaurant-grid{grid-template-columns:1fr;}}
+.hamburger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px;}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;border-radius:2px;transition:all 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+@media(max-width:600px){
+  .search-row{flex-direction:column;}
+  .hero-stats{gap:24px;}
+  .restaurant-grid{grid-template-columns:1fr;}
+  .hamburger{display:flex;}
+  .nav-links{display:none;flex-direction:column;position:fixed;top:60px;left:0;right:0;background:rgba(26,26,26,0.98);padding:12px 0;z-index:99;border-bottom:1px solid #2E2E2E;}
+  .nav-links.open{display:flex;}
+  .nav-links a{padding:12px 24px;font-size:15px;}
+}
 
 /* ── ONBOARDING TOUR ── */
 #tour-backdrop{position:fixed;inset:0;z-index:9000;pointer-events:none;}
@@ -130,15 +143,28 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 
 <nav>
   <a href="/" class="nav-logo">🔥 PIT<span>QUEST</span><sup style="font-size:11px;color:#888;font-family:sans-serif;vertical-align:super;">™</sup></a>
-  <div class="nav-links">
-    <a href="#finder">Explore BBQ</a>
-    <a href="#about">About</a>
-    <a href="#rollin">Rollin Smoke</a>
-    <a href="#" onclick="toggleShop(event)">Shop</a>
-    <a href="advertise.html">Advertise</a>
+  <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="navLinks">
+    <a href="#finder" onclick="closeNav()">Explore BBQ</a>
+    <a href="#about" onclick="closeNav()">About</a>
+    <a href="#rollin" onclick="closeNav()">Rollin Smoke</a>
+    <a href="#" onclick="toggleShop(event);closeNav()">Shop</a>
+    <a href="advertise.html" onclick="closeNav()">Advertise</a>
     <a href="https://play.google.com/store" class="nav-cta">Download App</a>
   </div>
 </nav>
+<script>
+function toggleNav(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('navLinks').classList.toggle('open');
+}
+function closeNav(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navLinks').classList.remove('open');
+}
+</script>
 
 <!-- HERO -->
 <div class="hero">
