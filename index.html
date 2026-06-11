@@ -151,7 +151,7 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
     <a href="#about" onclick="closeNav()">About</a>
     <a href="#rollin" onclick="closeNav()">Rollin Smoke</a>
     <a href="#" onclick="toggleShop(event);closeNav()">Shop</a>
-    <a href="https://www.smokinhotguysbbq.net" target="_blank" rel="noopener" onclick="closeNav()">Merch</a>
+    <a href="https://www.smokinhotguys.net" target="_blank" rel="noopener" onclick="closeNav()">Merch</a>
     <a href="advertise.html" onclick="closeNav()">Advertise</a>
     <a href="https://play.google.com/store" class="nav-cta">Download App</a>
   </div>
@@ -199,7 +199,7 @@ function closeNav(){
 <div class="section-wrap" id="finder" style="padding-top:20px;padding-bottom:20px;">
   <div class="search-box">
     <div class="search-row">
-      <input class="search-input" id="searchInput" placeholder="Craving BBQ? Search here…"/>
+      <input class="search-input" id="searchInput" placeholder="Search by restaurant name, city, or state…"/>
       <select id="stateSelect"><option value="">All States</option></select>
       <select id="styleSelect"><option value="">All Styles</option></select>
       <button class="clear-btn" onclick="clearFilters()">✕ Clear</button>
@@ -628,6 +628,7 @@ function filterRestaurants() {
     return matchQ && (!state||r.state===state) && (!style||r.style===style);
   });
   document.getElementById("grid-section").style.display = "block";
+  if (q) document.getElementById("grid-section").scrollIntoView({behavior:"smooth", block:"nearest"});
   sortAndRender();
 }
 
