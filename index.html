@@ -92,14 +92,16 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
 .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
 .hamburger.open span:nth-child(2){opacity:0;}
 .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
-@media(max-width:600px){
-  .search-row{flex-direction:column;}
-  .hero-stats{gap:24px;}
-  .restaurant-grid{grid-template-columns:1fr;}
+@media(max-width:900px){
   .hamburger{display:flex;}
   .nav-links{display:none;flex-direction:column;position:fixed;top:60px;left:0;width:100%;background:rgba(26,26,26,0.98);padding:12px 0;z-index:99;border-bottom:1px solid #2E2E2E;}
   .nav-links.open{display:flex;}
   .nav-links a{padding:12px 24px;font-size:15px;}
+}
+@media(max-width:600px){
+  .search-row{flex-direction:column;}
+  .hero-stats{gap:24px;}
+  .restaurant-grid{grid-template-columns:1fr;}
 }
 
 /* ── ONBOARDING TOUR ── */
@@ -150,7 +152,7 @@ footer{background:#111;border-top:1px solid #2E2E2E;padding:32px 24px;display:fl
     <a href="#finder" onclick="closeNav()">Explore BBQ</a>
     <a href="#about" onclick="closeNav()">About</a>
     <a href="#rollin" onclick="closeNav()">Rollin Smoke</a>
-    <a href="#" onclick="toggleShop(event);closeNav()">Shop</a>
+    <a href="#shop" onclick="openShop(event);closeNav()">Shop</a>
     <a href="https://www.smokinhotguys.net" target="_blank" rel="noopener" onclick="closeNav()">Merch</a>
     <a href="advertise.html" onclick="closeNav()">Advertise</a>
     <a href="https://play.google.com/store" class="nav-cta">Download App</a>
@@ -816,13 +818,12 @@ if (slides.length) setInterval(()=>{ slides[curSlide].classList.remove('active')
 document.addEventListener("click", ()=>document.getElementById("bgMusic").play(), {once:true});
 
 // Toggle Shop panel
-function toggleShop(e) {
+function openShop(e) {
   e.preventDefault();
   const shopEl = document.getElementById("shop");
   if (!shopEl) return;
-  const isHidden = shopEl.style.display === "none" || shopEl.style.display === "";
-  shopEl.style.display = isHidden ? "block" : "none";
-  if (isHidden) shopEl.scrollIntoView({ behavior: "smooth", block: "default" });
+  shopEl.style.display = "block";
+  shopEl.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
 
