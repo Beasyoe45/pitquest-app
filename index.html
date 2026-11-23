@@ -59,6 +59,17 @@
     .links a { padding: 12px 0; width: 100%; }
   }
 
+  /* Music toggle */
+  .music-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border: 2px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); font-size: .95rem; font-weight: 700; cursor: pointer; }
+  .music-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .music-btn .eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .music-btn .eq i { display: block; width: 3px; height: 4px; background: currentColor; border-radius: 1px; }
+  .music-btn[aria-pressed="true"] .eq i { animation: pqeq .8s ease-in-out infinite alternate; }
+  .music-btn[aria-pressed="true"] .eq i:nth-child(2) { animation-delay: .2s; }
+  .music-btn[aria-pressed="true"] .eq i:nth-child(3) { animation-delay: .4s; }
+  @keyframes pqeq { from { height: 3px; } to { height: 14px; } }
+  @media (prefers-reduced-motion: reduce) { .music-btn[aria-pressed="true"] .eq i { animation: none; height: 10px; } }
+
   /* Buttons + inputs */
   .btn { display: inline-block; padding: 15px 24px; font-size: 1.02rem; font-weight: 700; border: 0; border-radius: 10px; background: var(--ember); color: var(--ember-ink); cursor: pointer; text-decoration: none; text-align: center; }
   .btn:hover { filter: brightness(1.08); }
@@ -149,6 +160,9 @@
       <a href="#features">Features</a>
       <a href="#trail">I-40 Trail Guide</a>
       <a href="#claim">For owners</a>
+      <button class="music-btn" id="musicBtn" type="button" aria-pressed="false" aria-label="Play BBQ Banger background music">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="musicLbl">Play the jam</span>
+      </button>
       <a class="btn" href="https://play.google.com/store/apps/details?id=com.bbqfinder.app">Get the app</a>
     </nav>
   </div>
@@ -424,6 +438,8 @@
   </div>
 </footer>
 
+<audio id="bgm" src="assets/bbq-banger.mp3" loop preload="none"></audio>
+
 <script>
   // Mobile menu
   var btn = document.getElementById('menuBtn'), nav = document.getElementById('navLinks');
@@ -460,6 +476,19 @@
       document.getElementById('style-note').textContent = on ? 'Tap a style to see what makes it different.' : notes[c.dataset.style];
       // TODO: if (typeof window.filterByStyle === 'function') window.filterByStyle(on ? null : c.dataset.style);
     });
+  });
+
+  // Background music toggle (off by default; browsers block autoplay with sound)
+  var bgm = document.getElementById('bgm'), mbtn = document.getElementById('musicBtn'), mlbl = document.getElementById('musicLbl');
+  bgm.volume = 0.6;
+  mbtn.addEventListener('click', function () {
+    if (bgm.paused) {
+      bgm.play().then(function () {
+        mbtn.setAttribute('aria-pressed', 'true'); mlbl.textContent = 'Music on';
+      }).catch(function () { mlbl.textContent = 'Tap again'; });
+    } else {
+      bgm.pause(); mbtn.setAttribute('aria-pressed', 'false'); mlbl.textContent = 'Play the jam';
+    }
   });
   document.getElementById('yr').textContent = new Date().getFullYear();
 </script>
