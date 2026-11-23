@@ -1,155 +1,467 @@
-<!--
-  PitQuest drop-in sections for pitquest-finder.html
-  Paste each block where you want it. All CSS is scoped under .pq-* so it won't fight your existing styles.
-  Colors read from your own CSS variables if you have them (see the :root fallbacks) and
-  adapt to dark mode automatically.
-
-  TODO before launch:
-   1. Hero search: wire pqHeroSearch() to your real search function.
-   2. Claim button: set href to your Advertise/Claim page.
-   3. Lead magnet form: set action to Mailchimp / ConvertKit / Formspree (GitHub Pages is static, so it needs one).
-   4. Confirm the "700+" count and that live truck updates work as described.
--->
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PitQuest: Find BBQ Joints &amp; Food Trucks Near You</title>
+<meta name="description" content="Find 700+ BBQ joints and food trucks. Filter by regional style, see photos, and plan a BBQ road trip. Free on Android.">
+<link rel="canonical" href="https://pitquest.com/">
+<meta property="og:title" content="PitQuest: Hungry? Follow the smoke.">
+<meta property="og:description" content="700+ BBQ joints and food trucks, sorted by style. Plan your BBQ road trip.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pitquest.com/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "PitQuest",
+  "url": "https://pitquest.com/",
+  "description": "BBQ restaurant and food truck finder."
+}
+</script>
 <style>
   :root {
-    --pq-bg: #f6f2ec;
-    --pq-ink: #231a14;
-    --pq-muted: #6b5d52;
-    --pq-ember: #c8431b;
-    --pq-ember-ink: #ffffff;
-    --pq-panel: #ffffff;
-    --pq-line: #dcd2c6;
+    --bg: #f6f2ec; --ink: #231a14; --muted: #6b5d52; --ember: #c8431b; --ember-ink: #fff;
+    --panel: #ffffff; --line: #dcd2c6; --deep: #231a14; --deep-ink: #f3ebe2;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --pq-bg: #1b1512;
-      --pq-ink: #f3ebe2;
-      --pq-muted: #b3a597;
-      --pq-ember: #e2582c;
-      --pq-ember-ink: #1b1512;
-      --pq-panel: #261e19;
-      --pq-line: #3a2f28;
-    }
+    :root { --bg: #1b1512; --ink: #f3ebe2; --muted: #b3a597; --ember: #e2582c; --ember-ink: #1b1512;
+            --panel: #261e19; --line: #3a2f28; --deep: #120e0c; --deep-ink: #f3ebe2; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+  h1, h2, h3 { font-family: Rockwell, "Roboto Slab", Georgia, serif; letter-spacing: -0.02em; line-height: 1.08; margin: 0 0 14px; }
+  h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; }
+  h2 { font-size: clamp(1.8rem, 4.6vw, 2.8rem); font-weight: 800; }
+  h3 { font-size: 1.15rem; font-weight: 700; }
+  p { margin: 0 0 14px; }
+  a { color: inherit; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+  .section { padding: clamp(44px, 8vw, 92px) 0; }
+  .lede { font-size: clamp(1.05rem, 2.2vw, 1.25rem); color: var(--muted); max-width: 60ch; margin-bottom: 28px; }
+  .sr { position: absolute; left: -9999px; }
+
+  /* Nav */
+  header { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 10; }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .logo { font-family: Rockwell, "Roboto Slab", Georgia, serif; font-weight: 800; font-size: 1.4rem; text-decoration: none; }
+  .logo span { color: var(--ember); }
+  .links { display: flex; gap: 22px; align-items: center; }
+  .links a { text-decoration: none; font-weight: 600; }
+  .links a:hover { color: var(--ember); }
+  .menu-btn { display: none; background: none; border: 2px solid var(--line); border-radius: 8px; padding: 8px 12px; color: var(--ink); font-weight: 700; cursor: pointer; }
+  @media (max-width: 760px) {
+    .menu-btn { display: block; }
+    .links { display: none; position: absolute; top: 62px; left: 0; right: 0; flex-direction: column; align-items: flex-start; gap: 0; background: var(--bg); border-bottom: 1px solid var(--line); padding: 8px 20px 16px; }
+    .links.open { display: flex; }
+    .links a { padding: 12px 0; width: 100%; }
   }
 
-  .pq-section { background: var(--pq-bg); color: var(--pq-ink); padding: clamp(40px, 8vw, 88px) 20px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .pq-wrap { max-width: 880px; margin: 0 auto; }
-  .pq-h1, .pq-h2 { font-family: Rockwell, "Roboto Slab", "Courier New", Georgia, serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 16px; }
-  .pq-h1 { font-size: clamp(2.4rem, 7vw, 4.4rem); }
-  .pq-h2 { font-size: clamp(1.8rem, 4.5vw, 2.7rem); }
-  .pq-sub { font-size: clamp(1.05rem, 2.2vw, 1.25rem); line-height: 1.55; color: var(--pq-muted); max-width: 60ch; margin: 0 0 28px; }
+  /* Buttons + inputs */
+  .btn { display: inline-block; padding: 15px 24px; font-size: 1.02rem; font-weight: 700; border: 0; border-radius: 10px; background: var(--ember); color: var(--ember-ink); cursor: pointer; text-decoration: none; text-align: center; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+  :focus-visible { outline: 3px solid var(--ember); outline-offset: 2px; }
+  input[type="search"], input[type="email"] { flex: 1 1 240px; min-width: 0; padding: 15px 17px; font-size: 1.02rem; border: 2px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; max-width: 640px; }
+  .fine { display: block; margin-top: 10px; font-size: 0.9rem; color: var(--muted); }
 
-  /* Hero search */
-  .pq-search { display: flex; gap: 8px; max-width: 620px; flex-wrap: wrap; }
-  .pq-search input { flex: 1 1 240px; min-width: 0; padding: 16px 18px; font-size: 1.05rem; border: 2px solid var(--pq-line); border-radius: 10px; background: var(--pq-panel); color: var(--pq-ink); }
-  .pq-search input:focus-visible { outline: 3px solid var(--pq-ember); outline-offset: 2px; border-color: var(--pq-ember); }
-  .pq-btn { display: inline-block; padding: 16px 26px; font-size: 1.05rem; font-weight: 700; border: 0; border-radius: 10px; background: var(--pq-ember); color: var(--pq-ember-ink); cursor: pointer; text-decoration: none; text-align: center; }
-  .pq-btn:hover { filter: brightness(1.08); }
-  .pq-btn:focus-visible { outline: 3px solid var(--pq-ink); outline-offset: 2px; }
+  /* Hero */
+  .hero { padding-top: clamp(48px, 10vw, 110px); }
+  .claimline { margin-top: 20px; color: var(--muted); }
+  .claimline a { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--ember); text-underline-offset: 3px; }
+  .badges { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
 
-  .pq-claimline { margin: 22px 0 0; font-size: 0.98rem; color: var(--pq-muted); }
-  .pq-claimline a { color: var(--pq-ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--pq-ember); text-underline-offset: 3px; }
+  /* Hero background image.
+     Set the path to your original image here, e.g. url('images/pitquest-bg.jpg').
+     The dark overlay keeps the text readable on top of a photo. */
+  :root { --hero-img: none; }
+  .hero.has-bg { background: linear-gradient(rgba(18,14,12,.62), rgba(18,14,12,.82)), var(--hero-img) center / cover no-repeat, #120e0c; color: #f3ebe2; }
+  .hero.has-bg .lede, .hero.has-bg .claimline { color: #e2d6c8; }
+  .hero.has-bg .claimline a { color: #fff; }
+  .hero.has-bg .btn.ghost { color: #f3ebe2; border-color: #f3ebe2; }
+  .hero.has-bg :focus-visible { outline-color: #fff; }
 
-  /* Claim section */
-  .pq-benefits { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0; margin: 32px 0; border-top: 3px solid var(--pq-ink); }
-  .pq-benefit { padding: 22px 22px 22px 0; border-bottom: 1px solid var(--pq-line); }
-  .pq-benefit h3 { margin: 0 0 8px; font-size: 1.12rem; }
-  .pq-benefit p { margin: 0; color: var(--pq-muted); line-height: 1.55; }
-  .pq-steps { padding-left: 1.2em; color: var(--pq-muted); line-height: 1.8; margin: 0 0 28px; }
-  .pq-fine { display: block; margin-top: 10px; font-size: 0.9rem; color: var(--pq-muted); }
-  .pq-owner { margin-top: 28px; padding-left: 16px; border-left: 4px solid var(--pq-ember); color: var(--pq-muted); max-width: 60ch; line-height: 1.55; }
+  /* Quick-action buttons (Food Trucks / BBQ Shop) */
+  .quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; max-width: 640px; margin-top: 18px; }
+  .qbtn { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 12px; text-decoration: none; border: 2px solid var(--ink); background: var(--panel); color: var(--ink); transition: transform .12s ease, background .12s ease; }
+  .qbtn:hover { transform: translateY(-2px); }
+  .qbtn svg { flex: none; width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .qbtn strong { display: block; font-size: 1.08rem; line-height: 1.2; }
+  .qbtn small { display: block; font-size: .88rem; color: var(--muted); font-weight: 500; }
+  .qbtn.trucks { background: var(--ember); border-color: var(--ember); color: var(--ember-ink); }
+  .qbtn.trucks small { color: inherit; opacity: .85; }
+  @media (prefers-reduced-motion: reduce) { .qbtn:hover { transform: none; } }
+
+  /* Spots worth the drive */
+  .spots { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 8px; }
+  .spot { background: var(--panel); border: 2px solid var(--line); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; }
+  .spot h3 { margin: 0 0 2px; }
+  .spot .where { font-size: .92rem; color: var(--muted); margin: 0 0 10px; }
+  .spot .tag { align-self: flex-start; font-size: .85rem; font-weight: 600; padding: 3px 10px; border: 1.5px solid var(--ink); border-radius: 999px; margin-bottom: 10px; }
+  .spot p.blurb { color: var(--muted); margin: 0 0 14px; flex: 1; }
+  .spot .new { align-self: flex-start; font-size: .8rem; font-weight: 700; padding: 2px 9px; border-radius: 6px; background: var(--ember); color: var(--ember-ink); margin-bottom: 8px; }
+  .spot .addr { font-size: .88rem; color: var(--muted); margin: 0 0 12px; }
+  .spot a { font-weight: 700; text-decoration: underline; text-decoration-color: var(--ember); text-underline-offset: 3px; }
+  .spot:hover { border-color: var(--ember); }
+
+  /* Style filters */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+  .chip { padding: 11px 18px; border: 2px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); font-size: 1rem; font-weight: 600; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  #style-note { min-height: 3.2em; color: var(--muted); max-width: 60ch; }
+
+  /* Features */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); border-top: 3px solid var(--ink); }
+  .cell { padding: 22px 22px 22px 0; border-bottom: 1px solid var(--line); }
+  .cell p { color: var(--muted); margin: 0; }
+
+  /* Claim band */
+  .deep { background: var(--deep); color: var(--deep-ink); }
+  .deep .lede, .deep .cell p, .deep .fine { color: #c9bbac; }
+  .deep .grid { border-top-color: var(--deep-ink); }
+  .deep .cell { border-bottom-color: #3a2f28; }
+  .steps { color: #c9bbac; line-height: 1.8; padding-left: 1.2em; margin: 24px 0; }
+  .owner { margin-top: 28px; padding-left: 16px; border-left: 4px solid var(--ember); color: #c9bbac; max-width: 60ch; }
 
   /* Lead magnet */
-  .pq-lead { background: var(--pq-panel); border: 2px solid var(--pq-ink); border-radius: 14px; padding: clamp(24px, 5vw, 44px); }
-  .pq-lead form { display: flex; gap: 8px; flex-wrap: wrap; max-width: 520px; }
-  .pq-lead input[type="email"] { flex: 1 1 220px; min-width: 0; padding: 15px 16px; font-size: 1rem; border: 2px solid var(--pq-line); border-radius: 10px; background: var(--pq-bg); color: var(--pq-ink); }
-  .pq-lead input[type="email"]:focus-visible { outline: 3px solid var(--pq-ember); outline-offset: 2px; }
+  .lead { background: var(--panel); border: 2px solid var(--ink); border-radius: 14px; padding: clamp(24px, 5vw, 44px); }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 0.95rem; }
+  footer .wrap { display: flex; gap: 16px 28px; flex-wrap: wrap; justify-content: space-between; }
+  footer a { margin-right: 16px; }
 </style>
+</head>
+<body>
 
-
-<!-- ========== 1. HERO (Variation B) ========== -->
-<section class="pq-section" aria-labelledby="pq-hero-title">
-  <div class="pq-wrap">
-    <h1 class="pq-h1" id="pq-hero-title">Hungry? Follow the smoke.</h1>
-    <p class="pq-sub">700+ BBQ joints and food trucks, sorted by style: Memphis, Texas, Carolina, Kansas City, and more. Find what's smoking near you right now.</p>
-
-    <div class="pq-search" role="search">
-      <label for="pq-q" class="visually-hidden" style="position:absolute;left:-9999px;">Search BBQ</label>
-      <input id="pq-q" type="search" placeholder="What are you craving, and where?" autocomplete="off">
-      <button class="pq-btn" type="button" onclick="pqHeroSearch()">Find BBQ</button>
-    </div>
-
-    <p class="pq-claimline">Run the pit? Get found by hungry travelers. <a href="#claim">Claim your listing free</a></p>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="/">Pit<span>Quest</span></a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <nav class="links" id="navLinks" aria-label="Main">
+      <a href="/food-trucks">Food Trucks</a>
+      <a href="/shop">BBQ Shop</a>
+      <a href="#spots">Top Spots</a>
+      <a href="#new">New</a>
+      <a href="#styles">Styles</a>
+      <a href="#features">Features</a>
+      <a href="#trail">I-40 Trail Guide</a>
+      <a href="#claim">For owners</a>
+      <a class="btn" href="https://play.google.com/store/apps/details?id=com.bbqfinder.app">Get the app</a>
+    </nav>
   </div>
-</section>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="section hero has-bg" aria-labelledby="hero-title">
+    <div class="wrap">
+      <h1 id="hero-title">Hungry? Follow the smoke.</h1>
+      <p class="lede">700+ BBQ joints and food trucks, sorted by style: Memphis, Texas, Carolina, Kansas City, and more. Find what's smoking near you right now.</p>
+      <div class="row" role="search">
+        <label for="q" class="sr">Search BBQ by city, style, or craving</label>
+        <input id="q" type="search" placeholder="What are you craving, and where?" autocomplete="off">
+        <button class="btn" type="button" id="searchBtn">Find BBQ</button>
+      </div>
+      <!-- TODO: point these hrefs at your Food Trucks tab and Shop tab (e.g. pitquest-finder.html#trucks) -->
+      <div class="quick">
+        <a class="qbtn trucks" href="/food-trucks">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M4 32V12h24v20M28 18h9l7 8v6H28"/><path d="M4 32h4M16 32h12M40 32h4"/><circle cx="12" cy="35" r="4"/><circle cx="36" cy="35" r="4"/><path d="M10 18h12"/></svg>
+          <span><strong>Find food trucks</strong><small>See who's out and where</small></span>
+        </a>
+        <a class="qbtn" href="/shop">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 16h32l-2 24H10L8 16z"/><path d="M17 20v-6a7 7 0 0 1 14 0v6"/></svg>
+          <span><strong>Shop BBQ gear</strong><small>Rubs, sauces, and more</small></span>
+        </a>
+      </div>
+      <p class="claimline">Run the pit? Get found by hungry travelers. <a href="#claim">Claim your listing free</a></p>
+      <div class="badges">
+        <a class="btn ghost" href="https://play.google.com/store/apps/details?id=com.bbqfinder.app">Get it on Google Play</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 SPOTS WORTH THE DRIVE -->
+  <section class="section" id="spots" aria-labelledby="spots-title" style="padding-top:0">
+    <div class="wrap">
+      <h2 id="spots-title">10 BBQ spots worth the drive</h2>
+      <p class="lede">A glimpse of the smokehouses BBQ fans plan whole trips around. These are our editorial picks drawn from well-known national lists, not an official ranking.</p>
+
+      <!-- TODO: point each "See on PitQuest" link at that listing in your finder, e.g. pitquest-finder.html?q=Goldee's -->
+      <div class="spots">
+
+        <article class="spot">
+          <h3>Goldee's Barbecue</h3>
+          <p class="where">Fort Worth, TX</p>
+          <span class="tag">Texas brisket</span>
+          <p class="blurb">Texas Monthly's No. 1 pick in its 2021 ranking and a Michelin Bib Gourmand. Open Friday to Sunday for lunch, until it sells out.</p>
+          <p class="addr">4645 Dick Price Rd, Fort Worth, TX 76140</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Franklin Barbecue</h3>
+          <p class="where">Austin, TX</p>
+          <span class="tag">Central Texas</span>
+          <p class="blurb">The brisket line that launched a thousand road trips. Open Tuesday to Sunday from 11 a.m. until sold out. Bring a chair.</p>
+          <p class="addr">900 E 11th St, Austin, TX 78702</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Joe's Kansas City Bar-B-Que</h3>
+          <p class="where">Kansas City, KS</p>
+          <span class="tag">Kansas City</span>
+          <p class="blurb">Famous ribs and burnt ends, served from inside a working gas station since 1996. Closed Sundays.</p>
+          <p class="addr">3002 W 47th Ave, Kansas City, KS 66103</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Central BBQ (Midtown)</h3>
+          <p class="where">Memphis, TN</p>
+          <span class="tag">Memphis ribs</span>
+          <p class="blurb">Dry-rubbed ribs and pulled pork from the original Midtown spot, rebuilt and reopened in January 2025.</p>
+          <p class="addr">Central Ave, Memphis, TN 38104</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Scott's Bar-B-Que</h3>
+          <p class="where">Hemingway, SC</p>
+          <span class="tag">Whole hog</span>
+          <p class="blurb">The family smokehouse where pitmaster Rodney Scott learned whole hog, cooked over wood with a vinegar-based sauce. Limited hours, so check before you go.</p>
+          <p class="addr">2734 Hemingway Hwy, Hemingway, SC 29554</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Bogart's Smokehouse</h3>
+          <p class="where">St. Louis, MO</p>
+          <span class="tag">St. Louis style</span>
+          <p class="blurb">A Soulard favorite known for its blowtorch-finished ribs and a regular on national must-visit lists.</p>
+          <p class="addr">1627 S 9th St, St. Louis, MO 63104</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Moo's Craft Barbecue</h3>
+          <p class="where">Los Angeles, CA</p>
+          <span class="tag">Texas style, global twist</span>
+          <p class="blurb">Texas-style smoke with Asian and Latin influences, and a Michelin Bib Gourmand five years running.</p>
+          <p class="addr">2118 N Broadway, Los Angeles, CA 90031</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Heritage Barbecue</h3>
+          <p class="where">San Juan Capistrano, CA</p>
+          <span class="tag">California brisket</span>
+          <p class="blurb">Central Texas-style barbecue next to Mission San Juan Capistrano, with a Michelin Bib Gourmand.</p>
+          <p class="addr">31721 Camino Capistrano, San Juan Capistrano, CA 92675</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Little Miss BBQ (University)</h3>
+          <p class="where">Phoenix, AZ</p>
+          <span class="tag">Central Texas style</span>
+          <p class="blurb">Ranked No. 1 on Yelp's 2026 Top 100 BBQ restaurants in the U.S. Known for fatty brisket, usually sold out by early afternoon.</p>
+          <p class="addr">4301 E University Dr, Phoenix, AZ 85034</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <h3>Big Bob Gibson Bar-B-Q</h3>
+          <p class="where">Decatur, AL</p>
+          <span class="tag">Alabama white sauce</span>
+          <p class="blurb">Serving barbecue since 1925 and the birthplace of Alabama white sauce. Try it on the smoked chicken.</p>
+          <p class="addr">1715 6th Ave SE, Decatur, AL 35601</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+      </div>
+      <span class="fine">Picks are editorial and change often. Addresses and status last checked November 22, 2026. Confirm hours before you drive, since popular spots can sell out.</span>
+    </div>
+  </section>
+
+  <!-- NEW SPOTS AND TRUCKS -->
+  <section class="section" id="new" aria-labelledby="new-title" style="padding-top:0">
+    <div class="wrap">
+      <h2 id="new-title">New on the smoke</h2>
+      <p class="lede">Recent openings and trucks worth tracking.</p>
+      <div class="spots">
+
+        <article class="spot">
+          <span class="new">New: opened Sept. 2026</span>
+          <h3>Kirbee's BBQ</h3>
+          <p class="where">Greenpoint, Brooklyn, NY</p>
+          <span class="tag">Texas style, New York</span>
+          <p class="blurb">From two Texas Monthly Top 50 pitmasters, Jonny White (formerly of Goldee's) and Chuck Charnichart (Barbs B Q). Open Friday to Sunday, 11 a.m. to 4 p.m., and the line is part of the deal.</p>
+          <p class="addr">McGuinness Blvd, Greenpoint, Brooklyn, NY</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <span class="new">New: opened March 2025</span>
+          <h3>Elliott's BBQ Lounge</h3>
+          <p class="where">Florence, SC</p>
+          <span class="tag">Whole hog</span>
+          <p class="blurb">Pee Dee whole hog cooked over pecan wood inside Seminar Brewing. Southern Living named it the best new BBQ joint in the South for 2026.</p>
+          <p class="addr">551 W Lucas St, Florence, SC 29501</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <span class="new">New: opened Dec. 2025</span>
+          <h3>Lewis Barbecue</h3>
+          <p class="where">Atlanta, GA</p>
+          <span class="tag">Texas style</span>
+          <p class="blurb">Opened in Atlanta on December 8, 2025, and drew strong early reviews for its brisket.</p>
+          <p class="addr">Atlanta, GA (check the restaurant's site for the address)</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+        <article class="spot">
+          <span class="new">New truck</span>
+          <h3>Bucán Rodeo</h3>
+          <p class="where">San Antonio, TX</p>
+          <span class="tag">Food truck, Puerto Rican BBQ</span>
+          <p class="blurb">Mesquite-smoked meats worked into pernil, arroz con pollo, and ropa vieja, served with mofongo and tostones. Recently settled at the Broadway News food truck park.</p>
+          <p class="addr">Food truck: location changes, check before you go</p>
+          <a href="#">See on PitQuest</a>
+        </article>
+
+      </div>
+      <span class="fine">New spots and trucks change quickly. Last checked November 22, 2026.</span>
+    </div>
+  </section>
+
+  <!-- STYLES -->
+  <section class="section" id="styles" aria-labelledby="styles-title" style="padding-top:0">
+    <div class="wrap">
+      <h2 id="styles-title">Search by the style you love</h2>
+      <p class="lede">Every region smokes it differently. Pick a style and PitQuest filters the map to match.</p>
+      <div class="chips" role="group" aria-label="BBQ style filters">
+        <button class="chip" aria-pressed="false" data-style="memphis">Memphis</button>
+        <button class="chip" aria-pressed="false" data-style="texas">Texas</button>
+        <button class="chip" aria-pressed="false" data-style="carolina">Carolina</button>
+        <button class="chip" aria-pressed="false" data-style="kc">Kansas City</button>
+        <button class="chip" aria-pressed="false" data-style="alabama">Alabama</button>
+      </div>
+      <p id="style-note" aria-live="polite">Tap a style to see what makes it different.</p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section" id="features" aria-labelledby="features-title" style="padding-top:0">
+    <div class="wrap">
+      <h2 id="features-title">Built for people who plan trips around lunch</h2>
+      <div class="grid">
+        <div class="cell"><h3>BBQ near you</h3><p>Browse 700+ restaurants and food trucks with photos, details, and directions.</p></div>
+        <div class="cell"><h3>Food truck tracking</h3><p>Trucks move. See which are out, where they're parked, and what's cooking.</p></div>
+        <div class="cell"><h3>Road-trip planning</h3><p>Driving cross-country? Map smokehouse stops along your route.</p></div>
+        <div class="cell"><h3>See before you go</h3><p>Photo slideshows show the plate, the pit, and the place.</p></div>
+        <div class="cell"><h3>BBQ shop</h3><p>Rubs, sauces, and gear from pitmaster-approved brands.</p></div>
+        <div class="cell"><h3>Dark, light, or Pit mode</h3><p>Pick the look that works at noon or midnight.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAIL GUIDE -->
+  <section class="section" id="trail" aria-labelledby="trail-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="lead">
+        <h2 id="trail-title">Drive I-40 hungry.</h2>
+        <p class="lede">Get the free Tennessee BBQ Trail Guide: Memphis, Nashville, and Knoxville, with the stops worth pulling off for and none of the tourist traps.</p>
+        <!-- TODO: set action to your email provider's endpoint (Mailchimp, ConvertKit, Formspree) -->
+        <form class="row" action="#" method="post">
+          <label for="email" class="sr">Email address</label>
+          <input id="email" name="email" type="email" required placeholder="you@email.com" autocomplete="email">
+          <button class="btn" type="submit">Send me the guide</button>
+        </form>
+        <span class="fine">One email with the PDF. Unsubscribe anytime.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLAIM -->
+  <section class="section deep" id="claim" aria-labelledby="claim-title">
+    <div class="wrap">
+      <h2 id="claim-title">Hungry travelers are searching. Make sure they find you.</h2>
+      <p class="lede">Claim your free PitQuest listing and put your pit in front of BBQ fans and road-trippers looking for exactly what you cook.</p>
+      <div class="grid">
+        <div class="cell"><h3>Get found by people ready to eat</h3><p>Your listing puts you on their map, filtered by your style.</p></div>
+        <div class="cell"><h3>Update location and sell-out times</h3><p>Parked somewhere new? Out of ribs by 1 PM? Tell customers before they drive over.</p></div>
+        <div class="cell"><h3>No Yelp-style ad fees</h3><p>No pay-to-play ranking and no surprise bills. A free listing gets you on the map.</p></div>
+        <div class="cell"><h3>Show your food</h3><p>Add photos, hours, menu highlights, and your story.</p></div>
+      </div>
+      <ol class="steps">
+        <li>Find your listing, or add it.</li>
+        <li>Verify you're the owner.</li>
+        <li>Update your details and start getting found.</li>
+      </ol>
+      <!-- TODO: point to your Advertise With Us / claim page -->
+      <a class="btn" href="#">Claim my free listing</a>
+      <span class="fine">Takes about 2 minutes. No credit card.</span>
+      <p class="owner">Built by a pitmaster. PitQuest is made by Brian of Smokin Hot Guys BBQ, an NBBQA member who knows the grind of running a smoker.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="/bbq/clarksville-tn">Clarksville BBQ</a>
+      <a href="/bbq/nashville-tn">Nashville BBQ</a>
+      <a href="#claim">Advertise</a>
+    </div>
+    <div>&copy; <span id="yr">2026</span> PitQuest</div>
+  </div>
+</footer>
 
 <script>
-  function pqHeroSearch() {
-    var q = document.getElementById('pq-q').value.trim();
-    if (!q) return;
-    // TODO: replace with your real search hook, e.g. window.runSearch(q)
-    if (typeof window.runSearch === 'function') { window.runSearch(q); }
-    else { console.log('PitQuest search:', q); }
-  }
-  document.getElementById('pq-q').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') pqHeroSearch();
+  // Mobile menu
+  var btn = document.getElementById('menuBtn'), nav = document.getElementById('navLinks');
+  btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
   });
+  nav.addEventListener('click', function (e) { if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); } });
+
+  // Search: replace with your real search hook
+  function pqSearch() {
+    var q = document.getElementById('q').value.trim();
+    if (!q) return;
+    if (typeof window.runSearch === 'function') window.runSearch(q);
+    else window.location.href = 'https://play.google.com/store/apps/details?id=com.bbqfinder.app';
+  }
+  document.getElementById('searchBtn').addEventListener('click', pqSearch);
+  document.getElementById('q').addEventListener('keydown', function (e) { if (e.key === 'Enter') pqSearch(); });
+
+  // Style chips
+  var notes = {
+    memphis: 'Memphis: pork ribs and pulled pork, served dry-rubbed or wet, often with a tangy tomato-based sauce.',
+    texas: 'Texas: beef-forward, especially brisket, with a salt-and-pepper bark and little sauce.',
+    carolina: 'Carolina: pulled pork, with vinegar-based sauces in the east and a mustard influence in parts of South Carolina.',
+    kc: 'Kansas City: a mix of meats, famous for burnt ends and a thick, sweet tomato-molasses sauce.',
+    alabama: 'Alabama: known for white sauce, a mayonnaise-and-vinegar sauce, usually served with smoked chicken.'
+  };
+  var chips = document.querySelectorAll('.chip');
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      var on = c.getAttribute('aria-pressed') === 'true';
+      chips.forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      if (!on) c.setAttribute('aria-pressed', 'true');
+      document.getElementById('style-note').textContent = on ? 'Tap a style to see what makes it different.' : notes[c.dataset.style];
+      // TODO: if (typeof window.filterByStyle === 'function') window.filterByStyle(on ? null : c.dataset.style);
+    });
+  });
+  document.getElementById('yr').textContent = new Date().getFullYear();
 </script>
-
-
-<!-- ========== 2. CLAIM YOUR LISTING (B2B) ========== -->
-<section class="pq-section" id="claim" aria-labelledby="pq-claim-title">
-  <div class="pq-wrap">
-    <h2 class="pq-h2" id="pq-claim-title">Hungry travelers are searching. Make sure they find you.</h2>
-    <p class="pq-sub">Claim your free PitQuest listing and put your pit in front of BBQ fans and road-trippers looking for exactly what you cook.</p>
-
-    <div class="pq-benefits">
-      <div class="pq-benefit">
-        <h3>Get found by people ready to eat</h3>
-        <p>PitQuest users are hunting BBQ right now. Your listing puts you on their map, filtered by your style.</p>
-      </div>
-      <div class="pq-benefit">
-        <h3>Update your truck's location and sell-out times</h3>
-        <p>Parked somewhere new? Out of ribs by 1 PM? Tell customers before they drive over.</p>
-      </div>
-      <div class="pq-benefit">
-        <h3>No Yelp-style ad fees</h3>
-        <p>No pay-to-play ranking and no surprise bills. A free listing gets you on the map.</p>
-      </div>
-      <div class="pq-benefit">
-        <h3>Show your food</h3>
-        <p>Add photos, hours, menu highlights, and your story.</p>
-      </div>
-    </div>
-
-    <ol class="pq-steps">
-      <li>Find your listing, or add it.</li>
-      <li>Verify you're the owner.</li>
-      <li>Update your details and start getting found.</li>
-    </ol>
-
-    <a class="pq-btn" href="#">Claim my free listing</a>
-    <span class="pq-fine">Takes about 2 minutes. No credit card.</span>
-
-    <p class="pq-owner">Built by a pitmaster. PitQuest is made by Brian of Smokin Hot Guys BBQ, an NBBQA member who knows the grind of running a smoker.</p>
-  </div>
-</section>
-
-
-<!-- ========== 3. LEAD MAGNET: I-40 TRAIL GUIDE ========== -->
-<section class="pq-section" aria-labelledby="pq-lead-title">
-  <div class="pq-wrap">
-    <div class="pq-lead">
-      <h2 class="pq-h2" id="pq-lead-title">Drive I-40 hungry.</h2>
-      <p class="pq-sub">Get the free Tennessee BBQ Trail Guide: Memphis, Nashville, and Knoxville, with the stops worth pulling off for and none of the tourist traps.</p>
-      <!-- TODO: set action to your email provider's form endpoint -->
-      <form action="#" method="post">
-        <label for="pq-email" style="position:absolute;left:-9999px;">Email address</label>
-        <input id="pq-email" name="email" type="email" required placeholder="you@email.com" autocomplete="email">
-        <button class="pq-btn" type="submit">Send me the guide</button>
-      </form>
-      <span class="pq-fine">One email with the PDF. Unsubscribe anytime.</span>
-    </div>
-  </div>
-</section>
+</body>
+</html>
